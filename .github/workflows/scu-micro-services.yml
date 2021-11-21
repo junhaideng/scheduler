@@ -18,7 +18,7 @@ jobs:
       TO: ${{ secrets.TO }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-go
+      - uses: actions/setup-go@v2
         with:
           go-version: "^1.17"
       - run: go run scu-micro-services/main.go -eai $EAI_SESS -uukey $UUKEY -eu $EMAIL_USERNAME -ep $EMAIL_PASSWORD -to $TO
