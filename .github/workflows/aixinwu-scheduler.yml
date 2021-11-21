@@ -1,8 +1,11 @@
-name: scheduler
+name: aixinwu-scheduler
 
 on:
+  push:
+    paths:
+      - aixinwu-sign/**
   schedule:
-    - cron: "* 7 * * *" # 每天 7 点钟跑
+    - cron: "* * * * *" # 每天 7 点钟跑
 
 jobs:
   aixinwu:
