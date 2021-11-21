@@ -11,7 +11,7 @@ jobs:
   scu:
     runs-on: "ubuntu-latest"
     env:
-      EMAIL_USERNAME: ${{ secrets.EMAL_USERNAME }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       EAI_SESS: ${{ secrets.EAI_SESS }}
       UUKEY: ${{ secrets.UUKEY }}
