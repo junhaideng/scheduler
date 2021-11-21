@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - aixinwu-sign/**
+      - .github/workflows/aixinwu-scheduler.yml
   schedule:
     - cron: "* * * * *" # 每天 7 点钟跑
 
