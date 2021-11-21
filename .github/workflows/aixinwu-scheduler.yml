@@ -15,4 +15,4 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.17" # The Go version to download (if necessary) and use.
-      - run: go run anxinwu-sign/main.go -auth "${{ secrets.AUTHORIZATION}}"
+      - run: go run aixinwu-sign/main.go -auth "${{ secrets.AUTHORIZATION}}"
