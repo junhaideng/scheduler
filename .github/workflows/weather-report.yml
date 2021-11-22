@@ -1,0 +1,23 @@
+name: weather-report
+
+on:
+  push:
+    paths:
+      - weather-report/**
+      - .github/workflows/weather-report.yml
+#  schedule:  # 如果要定时，取消注释
+#    - cron: "0 0 * * *" # 每天 0 点跑 => 东八区 8点
+
+jobs:
+  weather-report:
+    runs-on: "ubuntu-latest"
+    env:
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      TO: "201648748@qq.com" # ${{ secrets.TO }}  # 不打扰C小姐，只发给自己
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17"
+      - run: go run weather-report/main.go -eu $EMAIL_USERNAME -ep $EMAIL_PASSWORD -to $TO
