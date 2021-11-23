@@ -39,6 +39,8 @@ var daring = []string{
 	"小姐姐", "亲爱的", "宝宝",
 }
 
+var timezone = time.FixedZone("CST", 8*3600)
+
 var client = http.Client{
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return nil
@@ -61,7 +63,7 @@ func init() {
 	flag.StringVar(&eaiSess, "eai", "", "eai-sess")
 	flag.StringVar(&uukey, "uukey", "", "uukey")
 	flag.IntVar(&max, "max", 10, "max try times")
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().In(timezone).UnixNano())
 }
 
 type SubmitResponse struct {
@@ -76,11 +78,11 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("zgfxdq", "0") // 不在中高风险地区
 	form.Add("mjry", "0")   // 今日是否接触密接人员
 	form.Add("csmjry", "0") // 近14日内本人/共同居住者是否去过疫情发生场所
-	form.Add("szxqmc", "望江校区")
+	form.Add("szxqmc", "望江校区") // 所在校区
 	form.Add("sfjzxgym", "1")
-	form.Add("jzxgymrq", "2021-05-12")
+	form.Add("jzxgymrq", "2021-05-12")  // 接种第一剂疫苗时间
 	form.Add("sfjzdezxgym", "1")
-	form.Add("jzdezxgymrq", "2021-06-11")
+	form.Add("jzdezxgymrq", "2021-06-11")  // 接种第二剂疫苗时间
 	form.Add("tw", "3")     // 体温
 	form.Add("sfcxtz", "0") // 没有出现发热、乏力、干咳、呼吸困难等症状
 	form.Add("sfjcbh", "0") // 今日是否接触无症状感染/疑似/确诊人群
@@ -108,14 +110,14 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("sftjwh", "0")
 	form.Add("szcs", "")
 	form.Add("szgj", "")
-	form.Add("bzxyy", "")
+	form.Add("bzxyy", "") // 不在校原因
 	form.Add("jcjg", "")
 	form.Add("hsjcrq", "")
 	form.Add("hsjcdd", "")
 	form.Add("hsjcjg", "0")
-	form.Add("date", time.Now().Format("20060102"))
+	form.Add("date", time.Now().In(timezone).Format("20060102"))
 	// form.Add("uid", "3678")
-	form.Add("created", fmt.Sprintf("%d", time.Now().Unix()))
+	form.Add("created", fmt.Sprintf("%d", time.Now().In(timezone).Unix()))
 	form.Add("jcqzrq", "")
 	form.Add("sfjcqz", "")
 	form.Add("szsqsfybl", "0")
@@ -165,7 +167,7 @@ func sendMail(to, content string) {
 		"text/plain",
 		content,
 	)
-	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, []string{to}, []byte(msg))
+	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, strings.Split(to, ","), []byte(msg))
 	if err != nil {
 		fmt.Println("send email failed: ", err)
 		panic("send email failed")
@@ -177,15 +179,15 @@ func send(typ checkInType) {
 	// 打卡成功
 	switch typ {
 	case CheckInSuccess:
-		sendMail(to, fmt.Sprintf("%s, 今天的打卡已经在 %s 完成了哦, 笔芯", dear, time.Now().Format("2006-01-02 15:04:05")))
+		sendMail(to, fmt.Sprintf("%s, 今天的打卡已经在 %s 完成了哦, 笔芯", dear, time.Now().In(timezone).Format("2006-01-02 15:04:05")))
 	case CheckInFailed:
 		sendMail(to, fmt.Sprintf("呜呜呜, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
 	case AlreadyCheckIn:
-		fmt.Println("已经打卡成功，不需要发送邮件啦")
+		fmt.Printf("已经打卡成功，不需要发送邮件啦, 运行时间: %s\n", time.Now().In(timezone).Format("2006-01-02 15:04:05"))
 	}
 }
 
-// GitHub Actions 为 0 区，我们这取东八区 => 16pm 打卡，实际上应该再晚一点
+// GitHub Actions 为 0 区，我们这取东八区 => 16pm 打卡
 func main() {
 	flag.Parse()
 	count := 0
@@ -197,7 +199,7 @@ func main() {
 		resp, err = submit(eaiSess, uukey)
 		if err != nil {
 			fmt.Println("submit err: ", err)
-			buf.WriteString(time.Now().Format("2006-01-02 15:04:05") + " 出现错误： " + err.Error() + "\n")
+			buf.WriteString(time.Now().In(timezone).Format("2006-01-02 15:04:05") + " 出现错误： " + err.Error() + "\n")
 			continue
 		}
 		break
