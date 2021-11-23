@@ -75,17 +75,17 @@ type SubmitResponse struct {
 // 提交签到内容
 func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form := url.Values{}
-	form.Add("zgfxdq", "0") // 不在中高风险地区
-	form.Add("mjry", "0")   // 今日是否接触密接人员
-	form.Add("csmjry", "0") // 近14日内本人/共同居住者是否去过疫情发生场所
+	form.Add("zgfxdq", "0")    // 不在中高风险地区
+	form.Add("mjry", "0")      // 今日是否接触密接人员
+	form.Add("csmjry", "0")    // 近14日内本人/共同居住者是否去过疫情发生场所
 	form.Add("szxqmc", "望江校区") // 所在校区
 	form.Add("sfjzxgym", "1")
-	form.Add("jzxgymrq", "2021-05-12")  // 接种第一剂疫苗时间
+	form.Add("jzxgymrq", "2021-05-12") // 接种第一剂疫苗时间
 	form.Add("sfjzdezxgym", "1")
-	form.Add("jzdezxgymrq", "2021-06-11")  // 接种第二剂疫苗时间
-	form.Add("tw", "3")     // 体温
-	form.Add("sfcxtz", "0") // 没有出现发热、乏力、干咳、呼吸困难等症状
-	form.Add("sfjcbh", "0") // 今日是否接触无症状感染/疑似/确诊人群
+	form.Add("jzdezxgymrq", "2021-06-11") // 接种第二剂疫苗时间
+	form.Add("tw", "3")                   // 体温
+	form.Add("sfcxtz", "0")               // 没有出现发热、乏力、干咳、呼吸困难等症状
+	form.Add("sfjcbh", "0")               // 今日是否接触无症状感染/疑似/确诊人群
 	form.Add("sfcxzysx", "0")
 	form.Add("qksm", "") // 其他情况
 	form.Add("sfyyjc", "0")
@@ -159,15 +159,19 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 }
 
 func sendMail(to, content string) {
+	tos := make([]string, 0)
+	for _, t := range strings.Split(to, ",") {
+		tos = append(tos, strings.TrimSpace(t))
+	}
 	auth := smtp.PlainAuth("", emailUsername, emailPassword, "smtp.126.com")
 	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: %s; charset=UTF-8\r\n\r\n %s",
 		"D先生 <"+emailUsername+">",
-		to,
+		strings.Join(tos, ","),
 		"每日打卡",
 		"text/plain",
 		content,
 	)
-	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, strings.Split(to, ","), []byte(msg))
+	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, tos, []byte(msg))
 	if err != nil {
 		fmt.Println("send email failed: ", err)
 		panic("send email failed")
