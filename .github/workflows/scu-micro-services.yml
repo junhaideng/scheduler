@@ -6,7 +6,8 @@ on:
       - scu-micro-services/**
       - .github/workflows/scu-micro-services.yml
   schedule:
-    - cron: "* 16 * * *"  # 0 点 => 东八区的 8 点
+    - cron: "* 16 * * *"  # 16 点 => 东八区的 0 点
+    - cron: "50 15 * * *"  # 15:50 => 23:50，因为发现实际执行的时候晚10多分钟
 jobs:
   scu:
     runs-on: "ubuntu-latest"
