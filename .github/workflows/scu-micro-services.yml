@@ -6,7 +6,7 @@ on:
       - scu-micro-services/**
       - .github/workflows/scu-micro-services.yml
   schedule:
-    - cron: "* 16 * * *"  # 16 点 => 东八区的 0 点
+    - cron: "0 16 * * *"  # 16 点 => 东八区的 0 点
     - cron: "58 15 * * *"  # 15:58 => 23:58
 jobs:
   scu:
