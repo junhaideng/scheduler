@@ -1,0 +1,19 @@
+name: juejin-check-in
+
+on:
+  push:
+    paths:
+      - juejin-check-in/** 
+      - .github/workflows/juejin-check-in.yml
+  schedule:
+    - cron: "0 0-23/12 * * *"
+
+jobs:
+  check-in:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17"
+      - run: go run juejin-check-in/main.go -c "${{ secrets.JUEJIN_COOKIE }}"
