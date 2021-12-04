@@ -1,0 +1,21 @@
+name: bilibili-check-in
+
+on:
+  push:
+    paths:
+      - bilibili-check-in/** 
+      - .github/workflows/bilibili-check-in.yml
+  schedule:
+    - cron: "0 0-23/12 * * *"
+
+jobs:
+  check-in:
+    runs-on: ubuntu-latest
+    env:
+      cookie: ${{secrets.BILIBILI_COOKIE}} 
+    steps:
+      - uses: actions/checkout@v2 
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17"
+      - run: go run bilibili-check-in/main.go -c "$cookie"
