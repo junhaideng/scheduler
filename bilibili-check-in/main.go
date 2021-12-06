@@ -15,10 +15,10 @@ type Response struct {
 	Data    Data   `json:"data"`
 }
 
-// 仅截取一部分字段
 type Data struct {
-	IsLogin bool    `json:"isLogin"`
-	Money   float64 `json:"money"`
+	Following    int64 `json:"following"`
+	Follower     int64 `json:"follower"`
+	DynamicCount int64 `json:"dynamic_count"`
 }
 
 var cookie string
@@ -28,7 +28,7 @@ func init() {
 }
 
 func CheckIn() error {
-	req, err := http.NewRequest(http.MethodGet, "https://api.bilibili.com/x/web-interface/nav", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.bilibili.com/x/web-interface/nav/stat", nil)
 	if err != nil {
 		return err
 	}
@@ -46,12 +46,12 @@ func CheckIn() error {
 		return err
 	}
 
-	if !res.Data.IsLogin {
+	if res.Code != 0 {
 		return errors.New("Not login, please provide lastest cookie again")
 	}
-	fmt.Println("Has money: ", res.Data.Money)
+	
+	fmt.Printf("Res: %#v\n", res)
 	return nil
-
 }
 
 func main() {
