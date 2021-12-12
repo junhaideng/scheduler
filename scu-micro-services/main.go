@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"math/rand"
 	"net"
 	"net/http"
@@ -34,6 +35,8 @@ const (
 	CheckInFailed
 	AlreadyCheckIn
 )
+
+var author = "201648748@qq.com"
 
 var daring = []string{
 	"小姐姐", "亲爱的", "宝宝",
@@ -68,6 +71,69 @@ var client = http.Client{
 		}).DialContext,
 	},
 }
+
+var text = `<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>打卡提醒</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <style>
+    .sweet {
+      width: 100%;
+      display: inline-block;
+    }
+
+    p {
+      display: inline;
+    }
+
+    hr {
+      margin: 10px 0;
+      border-color: mediumpurple;
+      border-width: 0.2px;
+      border-style: dashed;
+    }
+
+    div {
+      padding: 3px 0;
+    }
+
+    .from {
+      margin-top: 10px;
+      font-size: 14px;
+      float: right;
+      margin-right: 20px;
+    }
+
+    .from a {
+      text-decoration: none;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sweet">
+    <p class="tip">
+      每日情话✨:
+    </p>
+    <p class="content">
+      {{.content}} 🥳
+    </p>
+  </div>
+  <hr />
+  <div class="check-in">
+    {{.dear}}，今天的打卡已经在 {{.time}} 完成了哦，今天也要一块好好学习呀
+  </div>
+  <div class="from">
+    From <a href="mailto:{{.author}}">D先生</a>
+  </div>
+</body>
+
+</html>`
 
 const UserAgent string = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
 
@@ -183,7 +249,7 @@ func sendMail(to, content string) {
 		"D先生 <"+emailUsername+">",
 		strings.Join(tos, ","),
 		"每日疫情填报 & 记得十四天健康管理哦",
-		"text/plain",
+		"text/html",
 		content,
 	)
 	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, tos, []byte(msg))
@@ -194,16 +260,33 @@ func sendMail(to, content string) {
 }
 
 func send(typ checkInType) {
+	tpl, err := template.New("notice").Parse(text)
+	if err != nil {
+		sendMail(author, err.Error())
+		fmt.Println("", err)
+		return 
+	}
+	buf := &strings.Builder{}
+	now := time.Now().In(timezone).Format("2006-01-02 15:04:05")
+	
 	s := sweet[rand.Intn(len(sweet))]
 	dear := daring[rand.Intn(len(daring))]
+	
+	tpl.Execute(buf, map[string]string{
+		"content": s,
+		"time": now,
+		"dear": dear,
+		"author": author,
+	})
+
 	// 打卡成功
 	switch typ {
 	case CheckInSuccess:
-		sendMail(to, fmt.Sprintf("每日情话: %s\n\n%s, 今天的打卡已经在 %s 完成了哦, 笔芯。 \n\n", s, dear, time.Now().In(timezone).Format("2006-01-02 15:04:05")))
+		sendMail(to, buf.String())
 	case CheckInFailed:
-		sendMail(to, fmt.Sprintf("呜呜呜, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
+		sendMail(to, fmt.Sprintf("呜呜呜😭, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
 	case AlreadyCheckIn:
-		fmt.Printf("已经打卡成功，不需要发送邮件啦, 运行时间: %s\n", time.Now().In(timezone).Format("2006-01-02 15:04:05"))
+		fmt.Printf("已经打卡成功，不需要发送邮件啦, 运行时间: %s\n", now)
 	}
 }
 
@@ -227,7 +310,7 @@ func main() {
 	fmt.Printf("%#v\n", resp)
 
 	if buf.Len() > 0 {
-		sendMail("201648748@qq.com", buf.String())
+		sendMail(author, buf.String())
 	}
 	// 成功
 	if strings.Contains(resp.M, "已经") {
