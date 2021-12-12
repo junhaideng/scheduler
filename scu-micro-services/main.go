@@ -39,6 +39,21 @@ var daring = []string{
 	"小姐姐", "亲爱的", "宝宝",
 }
 
+var sweet = []string{
+	"承蒙你的出现，够我欢喜好几年。",
+	"自从遇见了你，余生便是欢喜，余生便都是你",
+	"三生有幸遇见你，人生只有两次幸运就好，一次遇见你，一次走到底。",
+	"如果我不讨你喜欢，你直接爱上我好了。",
+	"谁要你的飞吻，有本事真亲过来啊~",
+	"有你，我什么都不缺。",
+	"我想你应该很忙吧，那就只看前三个字就好了！",
+	"你知道我喜欢谁吗，不知道就看看第一个字。",
+	"我不喜欢等，我只喜欢你。",
+	"想做你的充分必要条件！",
+	"对你的喜欢单调递增，没有上限。",
+	"希望有一天，我可以成为你的定义域。",
+}
+
 var timezone = time.FixedZone("CST", 8*3600)
 
 var client = http.Client{
@@ -164,10 +179,10 @@ func sendMail(to, content string) {
 		tos = append(tos, strings.TrimSpace(t))
 	}
 	auth := smtp.PlainAuth("", emailUsername, emailPassword, "smtp.126.com")
-	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: %s; charset=UTF-8\r\n\r\n %s",
+	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: %s; charset=\"utf-8\"\r\n\r\n %s",
 		"D先生 <"+emailUsername+">",
 		strings.Join(tos, ","),
-		"每日打卡",
+		"每日疫情填报 & 记得十四天健康管理哦",
 		"text/plain",
 		content,
 	)
@@ -179,11 +194,12 @@ func sendMail(to, content string) {
 }
 
 func send(typ checkInType) {
+	s := sweet[rand.Intn(len(sweet))]
 	dear := daring[rand.Intn(len(daring))]
 	// 打卡成功
 	switch typ {
 	case CheckInSuccess:
-		sendMail(to, fmt.Sprintf("%s, 今天的打卡已经在 %s 完成了哦, 笔芯", dear, time.Now().In(timezone).Format("2006-01-02 15:04:05")))
+		sendMail(to, fmt.Sprintf("每日情话: %s\n\n%s, 今天的打卡已经在 %s 完成了哦, 笔芯。 \n\n", s, dear, time.Now().In(timezone).Format("2006-01-02 15:04:05")))
 	case CheckInFailed:
 		sendMail(to, fmt.Sprintf("呜呜呜, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
 	case AlreadyCheckIn:
