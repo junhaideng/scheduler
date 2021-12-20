@@ -1,0 +1,16 @@
+name: juejin-lottery
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 每日一次，多次需要消耗矿石
+
+jobs:
+  juejin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17"
+      - name: "free lottery"
+        run: go run juejin-lottery/main.go -c "${{ secrets.JUEJIN_COOKIE }}"
