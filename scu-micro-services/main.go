@@ -247,7 +247,7 @@ func sendMail(to, content string) {
 	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: %s; charset=\"utf-8\"\r\n\r\n %s",
 		"D先生 <"+emailUsername+">",
 		strings.Join(tos, ","),
-		"每日疫情填报 & 记得十四天健康管理哦",
+		"每日疫情填报",
 		"text/html",
 		content,
 	)
