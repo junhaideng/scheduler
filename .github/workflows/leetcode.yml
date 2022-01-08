@@ -2,7 +2,9 @@ name: leetcode
 
 on:
   push:
-    branches: [ master ]
+    paths:
+      - leetcode/**
+      - .github/workflows/leetcode.yml
   schedule:
     - cron: "0 15 * * *"
 
