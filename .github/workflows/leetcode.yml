@@ -1,0 +1,18 @@
+name: leetcode
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: "0 15 * * *"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run
+      run: cd leetcode && cargo run -- -c '${{ secrets.LEETCODE_COOKIE }}' -u '${{ secrets.EMAIL_USERNAME }}' -p ${{ secrets.EMAIL_PASSWORD }} -s ${{ secrets.EMAIL_SERVER }} --to '${{ secrets.LEETCODE_TO }}'
