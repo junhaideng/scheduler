@@ -158,10 +158,10 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("zgfxdq", "0")    // 不在中高风险地区
 	form.Add("mjry", "0")      // 今日是否接触密接人员
 	form.Add("csmjry", "0")    // 近14日内本人/共同居住者是否去过疫情发生场所
-	form.Add("szxqmc", "") // 所在校区
-	form.Add("sfjzxgym", "1") // 是否接种过新冠疫苗
+	form.Add("szxqmc", "望江校区") // 所在校区
+	form.Add("sfjzxgym", "1")
 	form.Add("jzxgymrq", "2021-05-12") // 接种第一剂疫苗时间
-	form.Add("sfjzdezxgym", "1") // 是否接种第二剂新冠疫苗
+	form.Add("sfjzdezxgym", "1")
 	form.Add("jzdezxgymrq", "2021-06-11") // 接种第二剂疫苗时间
 	form.Add("tw", "3")                   // 体温
 	form.Add("sfcxtz", "0")               // 没有出现发热、乏力、干咳、呼吸困难等症状
@@ -171,16 +171,13 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("sfyyjc", "0")
 	form.Add("jcjgqr", "0")
 	form.Add("remark", "")
-
-	form.Add("geo_api_info", `{"type":"complete","position":{"Q":26.988307562935,"R":111.28154595269098,"lng":111.281546,"lat":26.988308},"location_type":"html5","message":"Get geolocation success.Convert Success.Get address success.","accuracy":41883,"isConverted":true,"status":1,"addressComponent":{"citycode":"0739","adcode":"430523","businessAreas":[],"neighborhoodType":"","neighborhood":"","building":"","buildingType":"","street":"凤凰街","streetNumber":"46号","country":"中国","province":"湖南省","city":"邵阳市","district":"邵阳县","towncode":"430523100000","township":"塘渡口镇"},"formattedAddress":"湖南省邵阳市邵阳县塘渡口镇凤凰街46号","roads":[],"crosses":[],"pois":[],"info":"SUCCESS"}`)
-	form.Add("address", "湖南省邵阳市邵阳县塘渡口镇凤凰街46号")
-	form.Add("area", "湖南省 邵阳市 邵阳县")
-	form.Add("province", "湖南省")
-	form.Add("city", "邵阳市")
-	form.Add("sfzx", "0") // 不在校
-	form.Add("bzxyy", "回家")
-
-
+	form.Add("address", "四川省成都市武侯区望江路街道四川大学四川大学望江校区")
+	form.Add("geo_api_info",
+		`{"type":"complete","position":{"Q":30.634781629775,"R":104.08064317491403,"lng":104.080643,"lat":30.634782},"location_type":"html5","message":"Get sdkLocation failed.Get geolocation success.Convert Success.Get address success.","accuracy":50,"isConverted":true,"status":1,"addressComponent":{"citycode":"028","adcode":"510107","businessAreas":[{"name":"小天竺","id":"510107","location":{"Q":30.639354,"R":104.06894199999999,"lng":104.068942,"lat":30.639354}},{"name":"跳伞塔","id":"510107","location":{"Q":30.636149,"R":104.07122400000003,"lng":104.071224,"lat":30.636149}}],"neighborhoodType":"科教文化服务;学校;高等院校","neighborhood":"四川大学","building":"","buildingType":"","street":"新南路","streetNumber":"51号","country":"中国","province":"四川省","city":"成都市","district":"武侯区","township":"望江路街道"},"formattedAddress":"四川省成都市武侯区望江路街道四川大学四川大学望江校区","roads":[],"crosses":[],"pois":[],"info":"SUCCESS"}`)
+	form.Add("area", "四川省 成都市 武侯区")
+	form.Add("province", "四川省")
+	form.Add("city", "成都市")
+	form.Add("sfzx", "1") // 是否在校
 	form.Add("sfjcwhry", "0")
 	form.Add("sfjchbry", "0")
 	form.Add("sfcyglq", "0")
@@ -193,6 +190,7 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("sftjwh", "0")
 	form.Add("szcs", "")
 	form.Add("szgj", "")
+	form.Add("bzxyy", "") // 不在校原因
 	form.Add("jcjg", "")
 	form.Add("hsjcrq", "")
 	form.Add("hsjcdd", "")
@@ -265,19 +263,19 @@ func send(typ checkInType) {
 	if err != nil {
 		sendMail(author, err.Error())
 		fmt.Println("", err)
-		return
+		return 
 	}
 	buf := &strings.Builder{}
 	now := time.Now().In(timezone).Format("2006-01-02 15:04:05")
-
+	
 	s := sweet[rand.Intn(len(sweet))]
 	dear := daring[rand.Intn(len(daring))]
-
+	
 	tpl.Execute(buf, map[string]string{
 		"content": s,
-		"time":    now,
-		"dear":    dear,
-		"author":  author,
+		"time": now,
+		"dear": dear,
+		"author": author,
 	})
 
 	// 打卡成功
