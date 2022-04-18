@@ -281,7 +281,9 @@ func send(typ checkInType) {
 	// 打卡成功
 	switch typ {
 	case CheckInSuccess:
-		sendMail(to, buf.String())
+		// 打卡成功不发送邮件，避免打扰
+		// sendMail(to, buf.String())
+		fmt.Println(buf.String())
 	case CheckInFailed:
 		sendMail(to, fmt.Sprintf("呜呜呜😭, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
 	case AlreadyCheckIn:
