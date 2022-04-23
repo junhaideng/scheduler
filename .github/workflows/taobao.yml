@@ -6,7 +6,7 @@ on:
       - taobao/**
       - .github/workflows/taobao.yml
   schedule:
-    - cron: "0 0-23/2 * * *"  # 16 点 => 东八区的 0 点
+    - cron: "0 0-16/2 * * *"  # 16 点 => 东八区的 0 点
 jobs:
   check-order-status:
     runs-on: "ubuntu-latest"
