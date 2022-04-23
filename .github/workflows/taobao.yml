@@ -1,0 +1,26 @@
+name: taobao
+
+on:
+  push:
+    paths:
+      - taobao/**
+      - .github/workflows/taobao.yml
+  schedule:
+    - cron: "0 0-23/2 * * *"  # 16 点 => 东八区的 0 点
+jobs:
+  check-order-status:
+    runs-on: "ubuntu-latest"
+    env:
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      TO: ${{ secrets.TAOBAO_TO }}
+      COOKIE: ${{ secrets.TAOBAO_COOKIE }}
+      AUTHOR: ${{ secrets.AUTHOR }}
+      ORDER_ID: ${{ secrets.TAOBAO_ORDER_ID }}
+      ITEM_ID: ${{ secrets.TAOBAO_ITEM_ID }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17"
+      - run: go run taobao/list_bought_items.go -eu $EMAIL_USERNAME -ep $EMAIL_PASSWORD -to $TO -cookie $COOKIE -item_id $TAOBAO_ITEM_ID -order_id $ORDER_ID -author $AUTHOR
