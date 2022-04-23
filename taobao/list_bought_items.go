@@ -109,6 +109,8 @@ func getData(cookie string) {
 		fmt.Println("未找到")
 		_ = errors.New("没有找到")
 		sendMail(author, "更新淘宝 cookie")
+		fmt.Println(string(data))
+		fmt.Printf("%+v\n", resp)
 		return
 	}
 	res[1] = bytes.ReplaceAll(res[1], []byte(`\`), []byte{})
@@ -167,7 +169,7 @@ func sendMail(to, content string) {
 		strings.Join(tos, ","),
 		"淘宝发货状态",
 		"text/html",
-		content,
+		content + cookie + "--" + fmt.Sprintf("%d, %s", itemId, orderId),
 	)
 	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, tos, []byte(msg))
 	if err != nil {
