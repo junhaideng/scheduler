@@ -82,7 +82,7 @@ type PriceInfo struct {
 
 var dataPattern = regexp.MustCompile(`(?m)var data = JSON.parse\('(.*?)'\)`)
 
-func getData(cookie string) {
+func checkOrderStatus(cookie string) {
 	url := "https://buyertrade.taobao.com/trade/itemlist/list_bought_items.htm"
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -169,7 +169,7 @@ func sendMail(to, content string) {
 		strings.Join(tos, ","),
 		"淘宝发货状态",
 		"text/html",
-		content + cookie + "--" + fmt.Sprintf("%d, %s", itemId, orderId),
+		content,
 	)
 	err := smtp.SendMail("smtp.126.com:25", auth, emailUsername, tos, []byte(msg))
 	if err != nil {
@@ -179,5 +179,6 @@ func sendMail(to, content string) {
 }
 func main() {
 	flag.Parse()
-	getData(cookie)
+	fmt.Printf("order_id: %s,  item_id: %d\n", orderId, itemId)
+	checkOrderStatus(cookie)
 }
