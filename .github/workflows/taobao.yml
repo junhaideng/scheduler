@@ -23,4 +23,4 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: "^1.17"
-      - run: go run taobao/list_bought_items.go -eu $EMAIL_USERNAME -ep $EMAIL_PASSWORD -to "$TO" -cookie "$COOKIE" -item_id $TAOBAO_ITEM_ID -order_id $ORDER_ID -author "$AUTHOR"
+      - run: go run taobao/list_bought_items.go -eu $EMAIL_USERNAME -ep $EMAIL_PASSWORD -to "$TO" -cookie "$COOKIE" -item_id $ITEM_ID -order_id $ORDER_ID -author "$AUTHOR"
