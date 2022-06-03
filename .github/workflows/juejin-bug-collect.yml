@@ -1,0 +1,20 @@
+name: juejin-bug-collect
+
+on:
+  push:
+    paths:
+      - juejin-bug-collect/**
+      - .github/workflows/juejin-bug-collect.yml
+  schedule:
+    - cron: "0 15 * * 5"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run
+      run: cd juejin-bug-collect && cargo run --  '${{ secrets.JUEJIN_COOKIE }}'
