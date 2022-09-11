@@ -38,23 +38,23 @@ const (
 
 var author = "201648748@qq.com"
 
-var daring = []string{
-	"小姐姐", "亲爱的", "宝宝",
-}
+// var daring = []string{
+// 	"小姐姐", "亲爱的", "宝宝",
+// }
 
-var sweet = []string{
-	"自从遇见了你，余生便是欢喜，余生便都是你",
-	"人生只有两次幸运就好，一次遇见你，一次走到底。",
-	"如果我不讨你喜欢，你直接爱上我好了。",
-	"谁要你的飞吻，有本事真亲过来啊~",
-	"有你，我什么都不缺。",
-	"我想你应该很忙吧，那就只看前三个字就好了！",
-	"你知道我喜欢谁吗，不知道就看看第一个字。",
-	"我不喜欢等，我只喜欢你。",
-	"想做你的充分必要条件！",
-	"对你的喜欢单调递增，没有上限。",
-	"希望有一天，我可以成为你的定义域。",
-}
+// var sweet = []string{
+// 	"自从遇见了你，余生便是欢喜，余生便都是你",
+// 	"人生只有两次幸运就好，一次遇见你，一次走到底。",
+// 	"如果我不讨你喜欢，你直接爱上我好了。",
+// 	"谁要你的飞吻，有本事真亲过来啊~",
+// 	"有你，我什么都不缺。",
+// 	"我想你应该很忙吧，那就只看前三个字就好了！",
+// 	"你知道我喜欢谁吗，不知道就看看第一个字。",
+// 	"我不喜欢等，我只喜欢你。",
+// 	"想做你的充分必要条件！",
+// 	"对你的喜欢单调递增，没有上限。",
+// 	"希望有一天，我可以成为你的定义域。",
+// }
 
 var timezone = time.FixedZone("CST", 8*3600)
 
@@ -116,19 +116,12 @@ var text = `<!DOCTYPE html>
 
 <body>
   <div class="sweet">
-    <p class="tip">
-      每日情话✨:
-    </p>
     <p class="content">
-      {{.content}} 🥳
+     {{.to}} {{.content}} 🥳
     </p>
-  </div>
-  <hr />
-  <div class="check-in">
-    {{.dear}}，今天的打卡已经在 {{.time}} 完成了哦，今天也要一块好好学习呀
   </div>
   <div class="from">
-    From <a href="mailto:{{.author}}">D先生</a>
+    From <a href="mailto:{{.author}}">、Edgar</a>
   </div>
 </body>
 
@@ -245,7 +238,7 @@ func sendMail(to, content string) {
 	}
 	auth := smtp.PlainAuth("", emailUsername, emailPassword, "smtp.126.com")
 	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\nContent-Type: %s; charset=\"utf-8\"\r\n\r\n %s",
-		"D先生 <"+emailUsername+">",
+		"、Edgar <"+emailUsername+">",
 		strings.Join(tos, ","),
 		"每日疫情填报",
 		"text/html",
@@ -266,29 +259,28 @@ func send(typ checkInType) {
 		return 
 	}
 	buf := &strings.Builder{}
-	now := time.Now().In(timezone).Format("2006-01-02 15:04:05")
 	
-	s := sweet[rand.Intn(len(sweet))]
-	dear := daring[rand.Intn(len(daring))]
-	
+	content := "Thanks for using this scheduler job which is gonna to be closed, as you won't need it again, visit https://github/junhaideng/scheduler and contact the author by email if you want to reopen it, or maybe you can do it on your own or somebody else."
+
 	tpl.Execute(buf, map[string]string{
-		"content": s,
-		"time": now,
-		"dear": dear,
+		"content": content,
 		"author": author,
+		"to": "子言"
 	})
 
-	// 打卡成功
-	switch typ {
-	case CheckInSuccess:
-		// 打卡成功不发送邮件，避免打扰
-		// sendMail(to, buf.String())
-		fmt.Println(buf.String())
-	case CheckInFailed:
-		sendMail(to, fmt.Sprintf("呜呜呜😭, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
-	case AlreadyCheckIn:
-		fmt.Printf("已经打卡成功，不需要发送邮件啦, 运行时间: %s\n", now)
-	}
+	sendMail(to, buf.String())
+
+	// // 打卡成功
+	// switch typ {
+	// case CheckInSuccess:
+	// 	// 打卡成功不发送邮件，避免打扰
+	// 	// sendMail(to, buf.String())
+	// 	fmt.Println(buf.String())
+	// case CheckInFailed:
+	// 	sendMail(to, fmt.Sprintf("呜呜呜😭, %s, 今天打卡失败了, 快让D先生给你手动打!!", dear))
+	// case AlreadyCheckIn:
+	// 	fmt.Printf("已经打卡成功，不需要发送邮件啦, 运行时间: %s\n", now)
+	// }
 }
 
 // GitHub Actions 为 0 区，我们这取东八区 => 16pm 打卡
