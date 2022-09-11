@@ -208,6 +208,9 @@ func submit(eaiSess, uukey string) (*SubmitResponse, error) {
 	form.Add("ismoved", "0")
 
 	req, err := http.NewRequest(http.MethodPost, "https://wfw.scu.edu.cn/ncov/wap/default/save", strings.NewReader(form.Encode()))
+	if err != nil {
+		panic(err)
+	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Cookie", fmt.Sprintf("eai-sess=%s; UUkey=%s", eaiSess, uukey))
@@ -265,7 +268,7 @@ func send(typ checkInType) {
 	tpl.Execute(buf, map[string]string{
 		"content": content,
 		"author": author,
-		"to": "子言"
+		"to": "子言",
 	})
 
 	sendMail(to, buf.String())
