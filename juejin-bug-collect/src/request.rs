@@ -54,6 +54,7 @@ pub async fn collect_bug(client: &reqwest::Client, cookie: &str, data: &Data) ->
     if resp.err_no != 0 {
         return Err(anyhow!(resp.err_msg));
     }
+    println!("collect bug: {:?}", resp); 
 
     Ok(true)
 }
