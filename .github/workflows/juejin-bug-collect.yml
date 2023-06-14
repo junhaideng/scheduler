@@ -5,8 +5,8 @@ on:
     paths:
       - juejin-bug-collect/**
       - .github/workflows/juejin-bug-collect.yml
-  schedule:
-    - cron: "0 7 * * *"
+#   schedule:
+#     - cron: "0 7 * * *"
 
 env:
   CARGO_TERM_COLOR: always
