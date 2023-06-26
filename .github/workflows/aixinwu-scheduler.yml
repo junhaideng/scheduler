@@ -6,7 +6,7 @@ on:
       - aixinwu-sign/**
       - .github/workflows/aixinwu-scheduler.yml
   schedule:
-    - cron: "0 0-23/6 * * *" # 每天跑多次，每隔六小时
+    - cron: "0 8-23/12 * * *" # 每天跑多次，每隔六小时
 
 jobs:
   aixinwu:
